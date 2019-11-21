@@ -39,7 +39,7 @@ close all
 
 %  Material info: AL 6063-T7 Stock
 
-E = 10175; %KSI
+E = 10175*10^3; %PSI
 roh = 0.0002505; %lb-sec^2/in^4
 
 
@@ -51,9 +51,9 @@ w = 1;
 h = 1/8;
 hE = 1/4;
 hR = 0.040;
-MT = 1.131;
-ST = 0.5655;
-IT = 23.124;
+MT = 1.131.*roh;
+ST = 0.5655*roh;
+IT = 23.124*roh;
 A = w*h;
 Izz = ( w*h^3 )  / 12 ;
 
@@ -83,9 +83,9 @@ M2_subMatrix2(5,6) = ST;
 M2_subMatrix2(6,5) = ST;
 M2_subMatrix2(6,6) = IT;
 
-M2 = CM2 * M2_subMatrix1 + M2_subMatrix2 ;
+M2 = CM2 .* M2_subMatrix1 + M2_subMatrix2 ;
 
-K2 = CK4 * ...
+K2 = CK2 * ...
     [24,  6*L,   -24,  6*L,   0,    0;...
              6*L, 2*L^2, -6*L, L^2,   0,    0;...
              -24, -6*L,  48,   0,     -24,  6*L;...
@@ -93,7 +93,14 @@ K2 = CK4 * ...
              0,   0,     -24,  -6*L,  24,   -6*L;...
              0,   0,     6*L,  L^2,   -6*L, 2*L^2];
          
+ 
          
+         
+% solve the eigenvalue problem:
+
+[ EigenModes2 NaturalFrequencies2 ] = eigs(K2,M2);
+
+
 
 %% FOR 4 ELEMENTS:
 
@@ -184,3 +191,13 @@ K4 = CK4 * ...
              0,     0,      0,      0,      0,     0,     12*L,  L^2,   -12*L,   2*L^2];
          
 
+
+[ EigenModes4 NaturalFrequencies4 ] = eigs(K4,M4);
+
+
+
+%% outputs reustls:
+
+% natural angular frequencies
+Omegas2 = sqrt(diag(NaturalFrequencies2));
+Omegas4 = sqrt(diag(NaturalFrequencies4));
